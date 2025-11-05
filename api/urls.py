@@ -5,7 +5,7 @@ from . import exam_views
 from . import instructor_views
 from . import upload_views
 from . import print_views
-from django.views.decorators.csrf import csrf_exempt
+
 router = DefaultRouter()
 router.register(r'courses', views.CourseViewSet, basename='course')
 router.register(r'halls', views.HallViewSet, basename='hall')
@@ -14,7 +14,7 @@ router.register(r'course-mappings', views.CourseMappingViewSet, basename='course
 urlpatterns = [
     # Admin routes
     path('admin/register', views.admin_register, name='admin-register'),
-    path('admin/login', csrf_exempt(views.admin_login), name='admin-login'),
+    path('admin/login', views.admin_login, name='admin-login'),
     path('admin/logout', views.admin_logout, name='admin-logout'),
     path('admin/', views.admin_list, name='admin-list'),
     

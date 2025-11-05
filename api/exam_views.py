@@ -15,6 +15,7 @@ from .serializers import ExamSerializer
 
 
 @api_view(['PUT'])
+@permission_classes([AllowAny])
 def exam_update(request, id):
     """Update exam date/time and handle related schedules"""
     try:
@@ -120,6 +121,7 @@ def exam_delete(request, id):
 
 
 @api_view(['POST'])
+@permission_classes([AllowAny])
 def exam_select_hall(request, examID):
     """Assign halls to exam"""
     try:

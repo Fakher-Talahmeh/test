@@ -146,7 +146,7 @@ CORS_ALLOW_HEADERS = [
 # ---- DRF (JWT فقط؛ دون SessionAuthentication لتجنّب CSRF على API) ----
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'api.authentication.AdminJWTAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.AllowAny',

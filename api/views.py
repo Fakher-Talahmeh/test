@@ -65,34 +65,33 @@ def admin_login(request):
     if not admin.check_password(password):
         return Response({'message': 'البريد الإلكتروني أو كلمة المرور غير صحيحة.'}, status=status.HTTP_400_BAD_REQUEST)
     
-    # Generate JWT token
-    token_payload = {
-        'id': admin.id,
-        'email': admin.email,
-        'college': admin.college,
-        'exp': datetime.utcnow() + timedelta(days=1)
-    }
-    token = jwt.encode(token_payload, settings.SECRET_KEY, algorithm='HS256')
+    # Generate JWT tokens using SimpleJWT
+    from .authentication import get_tokens_for_admin
+    tokens = get_tokens_for_admin(admin)
     
     response = Response({
         'message': 'تم تسجيل الدخول بنجاح.',
         'email': admin.email,
         'college': admin.college,
-        'token': token
+        'access': tokens['access'],
+        'refresh': tokens['refresh']
     }, status=status.HTTP_200_OK)
     
+    # Set access token in cookie for cookie-based authentication
     response.set_cookie(
         key='token',
-        value=token,
+        value=tokens['access'],
         httponly=True,
         secure=False,  # Set to True in production with HTTPS
-        samesite='Strict'
+        samesite='Lax',
+        max_age=86400  # 1 day in seconds
     )
     
     return response
 
 
 @api_view(['POST'])
+@permission_classes([AllowAny])
 def admin_logout(request):
     response = Response({'message': 'تم تسجيل الخروج بنجاح.'}, status=status.HTTP_200_OK)
     response.delete_cookie('token')
@@ -100,6 +99,7 @@ def admin_logout(request):
 
 
 @api_view(['GET'])
+@permission_classes([AllowAny])
 def admin_list(request):
     admins = Admin.objects.all()
     serializer = AdminSerializer(admins, many=True)
@@ -207,6 +207,7 @@ class CourseMappingViewSet(viewsets.ModelViewSet):
 
 # Exam Views
 @api_view(['GET'])
+@permission_classes([AllowAny])
 def exam_list(request):
     college = request.GET.get('college')
     
@@ -366,6 +367,7 @@ def instructor_detail(request, id):
 
 
 @api_view(['POST'])
+@permission_classes([AllowAny])
 def instructor_create(request):
     name = request.data.get('name')
     email = request.data.get('email')
