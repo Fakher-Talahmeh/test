@@ -193,9 +193,14 @@ class CourseViewSet(viewsets.ModelViewSet):
 
 # Hall Views
 class HallViewSet(viewsets.ModelViewSet):
-    queryset = Hall.objects.all()
     serializer_class = HallSerializer
     permission_classes = [AllowAny]
+    def get_queryset(self):
+        queryset = Course.objects.all()
+        college = self.request.query_params.get('college')  # جلب قيمة الكلية من الـ query
+        if college:
+            queryset = queryset.filter(college=college)  # فلترة الكورسات بناءً على الكلية
+        return queryset
 
 
 # Course Mapping Views

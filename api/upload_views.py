@@ -21,6 +21,7 @@ def upload_students(request):
         
         # Read Excel file
         wb = openpyxl.load_workbook(BytesIO(file.read()))
+        print(wb)
         ws = wb.active
         
         created_count = 0
